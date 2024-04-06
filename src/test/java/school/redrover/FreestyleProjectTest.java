@@ -5,7 +5,10 @@ import org.testng.*;
 import org.testng.annotations.*;
 import school.redrover.runner.*;
 
+import java.util.*;
+
 public class FreestyleProjectTest extends BaseTest {
+    //Navigation Test
     @Test
     public void testCreateNewJobArrowIconNavigatesToNewJob() {
         String expectedURL = ProjectUtils.getBaseUrl() + "/newJob";
@@ -25,25 +28,33 @@ public class FreestyleProjectTest extends BaseTest {
         Assert.assertEquals(newTitle, expectedTitle);
     }
 
+    //Functional CREATE NEW FREESTYLE PROJECT JOB Test
     @Test(dependsOnMethods = "testCreateNewJobArrowIconNavigatesToNewJob")
     public void testCreateFreestyleProject() {
-        String jobName = "My First Freestyle project";
-        String expectedResult = "My First Freestyle project";
+        final String expectedJobNameCreated = "My First Freestyle project";
+        final int expectedAmountOfJobsCreated = 1;
 
         getDriver().findElement(By.xpath("//a[@href='newJob']")).click();
-        getDriver().findElement(By.xpath("//input[@name='name']")).sendKeys("My First Freestyle project");
+        getDriver().findElement(By.name("name")).sendKeys(expectedJobNameCreated);
         getDriver().findElement(By.xpath("//li[@class='hudson_model_FreeStyleProject']")).click();
         getDriver().findElement(By.id("ok-button")).click();
+
         getDriver().findElement(By.id("jenkins-home-link")).click();
 
-        String actualResult = getDriver().findElement(By.xpath("//tr[@id='job_"+ jobName + "']/td/a/span")).getText();
+        List<WebElement> jobs = getDriver().findElements(By.xpath("//table[@id='projectstatus']/tbody/tr"));
 
-        Assert.assertEquals(actualResult, expectedResult);
+        Assert.assertEquals(jobs.size(), expectedAmountOfJobsCreated);
+
+        WebElement jobNameElement = jobs.get(0).findElement(By.xpath("//tr[@id='job_"+ expectedJobNameCreated + "']/td/a/span"));
+        final String actualJobNameText = jobNameElement.getText();
+
+        Assert.assertTrue(jobNameElement.isDisplayed());
+        Assert.assertEquals(actualJobNameText, expectedJobNameCreated);
 
     }
 
     @Test(dependsOnMethods = "testCreateNewJobArrowIconNavigatesToNewJob")
-    public void testCreateFreestyleProjectAndSeveDefaultConfig() {
+    public void testCreateFreestyleProjectAndSaveDefaultConfig() {
         String expectedResult = "My First Freestyle project";
 
         getDriver().findElement(By.xpath("//a[@href='newJob']")).click();
