@@ -27,8 +27,17 @@ public class FreestyleProjectTest extends BaseTest {
 
     @Test(dependsOnMethods = "testCreateNewJobArrowIconNavigatesToNewJob")
     public void testCreateFreestyleProject() {
-        getDriver().findElement(By.xpath("//a[@href='newJob']/span[@class='trailing-icon']")).click();
+        String expectedResult = "My First Freestyle project";
 
+        getDriver().findElement(By.xpath("//a[@href='newJob']")).click();
+        getDriver().findElement(By.xpath("//input[@name='name']")).sendKeys("My First Freestyle project");
+        getDriver().findElement(By.xpath("//li[@class='hudson_model_FreeStyleProject']")).click();
+        getDriver().findElement(By.id("ok-button")).click();
+        getDriver().findElement(By.xpath("//button[@name='Submit']")).click();
+
+        String actualResult = getDriver().findElement(By.xpath("//h1")).getText();
+
+        Assert.assertEquals(actualResult, expectedResult);
 
     }
 }
